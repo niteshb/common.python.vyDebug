@@ -1,44 +1,45 @@
 from pprint import pprint
+from typing import List, Callable, Dict, Any
 
-class vyDebugLevel():
-    NONE = 0
-    SILENT = 0
-    TALK = 1
-    VERBOSE = 2
-    NOISY = 3
-    BLARING = 4
-    CACOPHONOUS = 5
-    MAX = 5
+class VyDebugLevel():
+    MIN: int = 0
+    NONE: int = 0
+    SILENT: int = 0
+    TALK: int = 1
+    VERBOSE: int = 2
+    NOISY: int = 3
+    BLARING: int = 4
+    CACOPHONOUS: int = 5
+    MAX: int = 5
 
-class vyDebug():
-    def noPrint(*args, **kwargs):
-        return
+def noPrint(*args, **kwargs):
+    return
 
-    def __init__(self, level):
+class VyDebug():
+    def __init__(self, level: int=0):
+        self.prints: List[Callable] = [noPrint] * (VyDebugLevel.MAX + 1) 
         self.level = level
-        self.prints = [vyDebug.noPrint] * (vyDebugLevel.MAX + 1) 
-        self.llprint0 = print
-        self.llprint1 = vyDebug.noPrint
-        self.llprint2 = vyDebug.noPrint
-        self.llprint3 = vyDebug.noPrint
-        self.llprint4 = vyDebug.noPrint
-        self.llprint5 = vyDebug.noPrint
-        self.setPrints()
 
-    def setLevel(self, level):
-        self.level = level
-        self.setPrints()
-    
     def __getattr__(self, attr):
+        if attr == 'level':
+            return self._level
         if attr.startswith('print'):
             suffix = attr[5:]
-            if suffix in [str(_) for _ in range(vyDebugLevel.MAX + 1)]:
+            if suffix in [str(_) for _ in range(VyDebugLevel.MAX + 1)]:
                 return self.prints[int(suffix)]
 
+    def __setattr__(self, attr, value):
+        if attr == 'level':
+            assert type(value) == int
+            value = max(value, -1)
+            value = min(value, VyDebugLevel.MAX)
+            self._level : int = value
+            self.setPrints()
+        else:
+            super().__setattr__(attr, value)
 
     def setPrints(self):
         for idx in range(self.level + 1):
-            self.prints[idx] = print
-        for idx in range(self.level + 1, vyDebugLevel.MAX + 1):
-            self.prints[idx] = vyDebug.noPrint
-
+            self.prints[idx] = pprint
+        for idx in range(self.level + 1, VyDebugLevel.MAX + 1):
+            self.prints[idx] = noPrint

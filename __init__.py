@@ -1,1 +1,1 @@
-from .vyDebug import vyDebug, vyDebugLevel
+from .vyDebug import VyDebug, VyDebugLevel
