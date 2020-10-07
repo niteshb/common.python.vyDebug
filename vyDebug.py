@@ -20,7 +20,7 @@ class VyDebug():
         self.prints: List[Callable] = [noPrint] * (VyDebugLevel.MAX + 1) 
         self.level = level
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str):
         if attr == 'level':
             return self._level
         if attr.startswith('print'):
@@ -28,7 +28,7 @@ class VyDebug():
             if suffix in [str(_) for _ in range(VyDebugLevel.MAX + 1)]:
                 return self.prints[int(suffix)]
 
-    def __setattr__(self, attr, value):
+    def __setattr__(self, attr: str, value: Any):
         if attr == 'level':
             assert type(value) == int
             value = max(value, -1)
