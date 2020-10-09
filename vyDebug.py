@@ -27,6 +27,7 @@ class VyDebug():
             suffix = attr[5:]
             if suffix in [str(_) for _ in range(VyDebugLevel.MAX + 1)]:
                 return self.prints[int(suffix)]
+        return super().__getattr__(attr)
 
     def __setattr__(self, attr: str, value: Any):
         if attr == 'level':
